@@ -1,0 +1,155 @@
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor httpAcc
+@using System.Security.Claims
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Kitap Köşesi</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="all,follow">
+    <!-- gLightbox gallery-->
+    <link rel="stylesheet" href="vendor/glightbox/css/glightbox.min.css">
+    <!-- Range slider-->
+    <link rel="stylesheet" href="vendor/nouislider/nouislider.min.css">
+    <!-- Choices CSS-->
+    <link rel="stylesheet" href="vendor/choices.js/public/assets/styles/choices.min.css">
+    <!-- Swiper slider-->
+    <link rel="stylesheet" href="vendor/swiper/swiper-bundle.min.css">
+    <!-- Google fonts-->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@300;400;700&amp;display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Martel+Sans:wght@300;400;800&amp;display=swap">
+    <!-- theme stylesheet-->
+    <link rel="stylesheet" href="~/homeUI/css/style.default.css" id="theme-stylesheet">
+    <!-- Custom stylesheet - for your changes-->
+    <link rel="stylesheet" href="~/homeUI/css/custom.css">
+    <!-- Favicon-->
+    <link rel="shortcut icon" href="~/homeUI/img/favicon-new.png">
+</head>
+<body>
+    <div class="page-holder">
+        <!-- navbar-->
+        <header class="header bg-white">
+            <div class="container px-lg-3" style="width:auto;">
+                <nav class="navbar navbar-expand-lg navbar-light py-3 px-lg-0">
+                    <a class="navbar-brand" asp-action="Index" asp-controller="Home">
+                        <span class="fw-bold text-uppercase text-dark style="font-size: 22px;">KİTAP KÖŞESİ</span>
+                    </a>
+                    <button class="navbar-toggler navbar-toggler-end" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+                    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul class="navbar-nav me-auto">
+                            <li class="nav-item">
+                                <!-- Link--><a class="nav-link active" asp-action="Index" asp-controller="Home">Anasayfa</a>
+                            </li>
+
+                            @if (httpAcc.HttpContext.Session.GetString("JwtToken") != null &&
+                            httpAcc.HttpContext.Session.GetString("JwtToken").ToString().Length > 0)
+                            {
+                                var userRole = httpAcc.HttpContext.User.FindFirstValue(ClaimTypes.Role);
+                                if (userRole == "Admin")
+                                {
+                                    <li class="nav-item">
+                                        <!-- Link--><a class="nav-link" asp-action="Create" asp-controller="Book">Kitap Ekle</a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <!-- Link--><a class="nav-link" asp-action="Index" asp-controller="Order">Siparişler</a>
+                                    </li>
+                                }
+                            }
+
+
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" id="pagesDropdown" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Kategoriler</a>
+                                <div class="dropdown-menu mt-3 shadow-sm" aria-labelledby="pagesDropdown">
+                                    @await Component.InvokeAsync("CategoryList")
+                                </div>
+                            </li>
+
+
+
+                        </ul>
+                        <ul class="navbar-nav ms-auto">
+
+
+                            @if (httpAcc.HttpContext.Session.GetString("JwtToken") != null &&
+                            httpAcc.HttpContext.Session.GetString("JwtToken").ToString().Length > 0)
+                            {
+                                var userRole = httpAcc.HttpContext.User.FindFirstValue(ClaimTypes.Role);
+                                if (userRole == "User")
+                                {
+                                    <li class="nav-item"><a class="nav-link" asp-action="Index" asp-controller="Cart"> <i class="fas fa-dolly-flatbed me-1"></i>Sepetim</a></li>
+                                }
+                            }
+
+
+                            @if (httpAcc.HttpContext.Session.GetString("JwtToken") != null &&
+                            httpAcc.HttpContext.Session.GetString("JwtToken").ToString().Length > 0)
+                            {
+
+                                <li class="nav-item"><a class="nav-link" asp-action="Logout" asp-controller="Auth"> <i class="fas fa-user me-1"></i>Çıkış Yap</a></li>
+
+                            }
+                            else
+                            {
+                                <li class="nav-item"><a class="nav-link" asp-action="Login" asp-controller="Auth"> <i class="fas fa-user me-1"></i>Giriş Yap</a></li>
+                                <li class="nav-item"><a class="nav-link" asp-action="Register" asp-controller="Auth"> <i class="far fa-user me-1"></i>Üye Ol</a></li>
+                            }
+
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+        @RenderBody()
+        <footer class="bg-dark text-white">
+            <div class="container py-4">
+
+                <div class="border-top pt-4" style="border-color: #1d1d1d !important">
+                    <div class="row">
+                        <div class="col-md-6 text-center text-md-start">
+                            <p class="small mb-0"><strong>www.kitapkosesi.com</strong> &copy; 2024 Tüm Hakları Saklıdır.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <!-- JavaScript files-->
+        <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <script src="vendor/glightbox/js/glightbox.min.js"></script>
+        <script src="vendor/nouislider/nouislider.min.js"></script>
+        <script src="vendor/swiper/swiper-bundle.min.js"></script>
+        <script src="vendor/choices.js/public/assets/scripts/choices.min.js"></script>
+        <script src="~/homeUI/js/front.js"></script>
+        <script>
+            // ------------------------------------------------------- //
+            //   Inject SVG Sprite -
+            //   see more here
+            //   https://css-tricks.com/ajaxing-svg-sprite/
+            // ------------------------------------------------------ //
+            function injectSvgSprite(path) {
+
+                var ajax = new XMLHttpRequest();
+                ajax.open("GET", path, true);
+                ajax.send();
+                ajax.onload = function (e) {
+                    var div = document.createElement("div");
+                    div.className = 'd-none';
+                    div.innerHTML = ajax.responseText;
+                    document.body.insertBefore(div, document.body.childNodes[0]);
+                }
+            }
+            // this is set to BootstrapTemple website as you cannot
+            // inject local SVG sprite (using only 'icons/orion-svg-sprite.svg' path)
+            // while using file:// protocol
+            // pls don't forget to change to your domain :)
+            injectSvgSprite('https://bootstraptemple.com/files/icons/orion-svg-sprite.svg');
+
+        </script>
+        <!-- FontAwesome CSS - loading as last, so it doesn't block rendering-->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+    </div>
+</body>
+</html>
